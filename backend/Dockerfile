@@ -16,6 +16,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Create a non-root user for running the application.
 RUN groupadd -r appgroup && useradd -r -g appgroup appuser
 
+# Copy requirements first to leverage Docker layer caching.
+COPY --chown=appuser:appgroup requirements.txt ./
+
+# Install runtime dependencies from requirements.txt.
+RUN pip install --no-cache-dir -r requirements.txt
+
 # Copy project metadata and source code.
 COPY --chown=appuser:appgroup pyproject.toml README.md ./
 COPY --chown=appuser:appgroup app ./app

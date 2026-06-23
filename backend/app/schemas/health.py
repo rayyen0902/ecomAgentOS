@@ -9,3 +9,4 @@ class HealthCheckResponse(BaseModel):
     status: str = Field(..., description="Service status indicator.")
     version: str = Field(..., description="Application version.")
     timestamp: str = Field(..., description="UTC timestamp in ISO 8601 format.")
+    database: str = Field(default="ok", description="Database connection status.")
