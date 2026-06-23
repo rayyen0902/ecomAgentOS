@@ -15,6 +15,36 @@ source .venv/bin/activate
 pip install -e ".[dev]"
 ```
 
+## LLM configuration
+
+Set the active provider via `LLM_PROVIDER` and its API key:
+
+```bash
+# Agnes (default)
+export LLM_PROVIDER=agnes
+export AGNES_API_KEY=sk-xxx
+
+# OpenAI
+export LLM_PROVIDER=openai
+export OPENAI_API_KEY=sk-xxx
+
+# DeepSeek
+export LLM_PROVIDER=deepseek
+export DEEPSEEK_API_KEY=sk-xxx
+
+# Mock provider for tests / offline development
+export LLM_PROVIDER=mock
+```
+
+Optional environment variables:
+
+- `AGNES_BASE_URL` (default: `https://api.agnes.ai/v1`)
+- `AGNES_DEFAULT_MODEL` (default: `agnes-large-latest`)
+- `OPENAI_BASE_URL` (default: `https://api.openai.com/v1`)
+- `OPENAI_DEFAULT_MODEL` (default: `gpt-4o`)
+- `DEEPSEEK_BASE_URL` (default: `https://api.deepseek.com/v1`)
+- `DEEPSEEK_DEFAULT_MODEL` (default: `deepseek-chat`)
+
 ## Run the server
 
 ```bash

@@ -1,22 +1,43 @@
-"""Application configuration placeholders.
+"""Application configuration.
 
-This module will be extended in CODE-005 to load environment-specific settings.
+Settings are loaded from environment variables where available. Secrets and
+environment-specific values must never be hard-coded.
 """
 
-from dataclasses import dataclass
+from pydantic import ConfigDict
+from pydantic_settings import BaseSettings
 
 
-@dataclass(frozen=True)
-class Settings:
-    """Global application settings.
+class Settings(BaseSettings):
+    """Global application settings."""
 
-    Secrets and environment-specific values must be provided via environment
-    variables rather than hard-coded constants.
-    """
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+    )
 
     app_name: str = "ecomAgentOS"
     app_version: str = "0.1.0"
     debug: bool = False
+
+    # LLM provider selection: agnes | openai | deepseek | mock
+    llm_provider: str = "agnes"
+
+    # Agnes
+    agnes_api_key: str | None = None
+    agnes_base_url: str = "https://api.agnes.ai/v1"
+    agnes_default_model: str = "agnes-large-latest"
+
+    # OpenAI
+    openai_api_key: str | None = None
+    openai_base_url: str = "https://api.openai.com/v1"
+    openai_default_model: str = "gpt-4o"
+
+    # DeepSeek
+    deepseek_api_key: str | None = None
+    deepseek_base_url: str = "https://api.deepseek.com/v1"
+    deepseek_default_model: str = "deepseek-chat"
 
 
 settings = Settings()
