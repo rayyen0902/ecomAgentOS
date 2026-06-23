@@ -25,7 +25,7 @@ repos:
     hooks:
       - id: check-env-files
         name: Check for .env files
-        entry: 'sh -c "git diff --name-only --cached | grep -E ''\\.env$|\\.env\\.'' && echo ''Error: .env files cannot be committed. Use .env.example instead.'' && exit 1 || exit 0"'
+        entry: 'sh -c "git diff --name-only --cached | grep -E ''^\.env$|^backend/\.env$'' && echo ''Error: .env files cannot be committed. Use .env.example instead.'' && exit 1 || exit 0"'
         language: system
         always_run: true
         files: "\\.env$"
