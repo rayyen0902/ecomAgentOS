@@ -2,7 +2,7 @@
 
 > **文档定位：** 定义本项目中 AI 开发 Agent 的职责边界、协作规则与验收标准  
 > **维护频率：** 新 Agent 加入或职责调整时更新  
-> **文档版本：** v1.0
+> **文档版本：** v1.1
 
 ---
 
@@ -14,7 +14,8 @@
 | RPA 平台 Agent | `rpa-platform` | 浏览器自动化、平台适配器、登录/改价 | `backend/rpa/`, `desktop/src-tauri/` | Phase 2~6 |
 | Agent 引擎 Agent | `agent-engine` | LangGraph 工作流、LLM 调用、业务 Agent | `backend/agents/` | Phase 3~6 |
 | 前端客户端 Agent | `frontend-client` | Tauri 桌面端、Mobile PWA、用户界面 | `desktop/`, `mobile/` | Phase 7 |
-| DevOps & QA Agent | `devops-qa` | 部署、测试、CI/CD、代码质量、验收 | 全局 | 全程 |
+| DevOps & QA Agent | `devops-qa` | 部署、测试、CI/CD、代码质量 | 全局 | 全程 |
+| 验收 Agent | `acceptance` | 独立验收、复测、出具验收报告 | 全局 | 全程 |
 
 ---
 
@@ -196,6 +197,33 @@
 - pre-commit 无错误
 - 每次 Phase Gate 能出具验收报告
 
+### 6. 验收 Agent（acceptance）
+
+**负责范围：**
+- 独立复测每个工单的验收标准
+- 检查交付文件是否完整
+- 运行测试命令并记录结果
+- 验证接口/服务是否按预期工作
+- 检查是否引入未批准的依赖或修改
+- 出具验收报告（通过 / 不通过 + 证据）
+
+**输出物：**
+- `docs/PMO/acceptance/CODE-XXX.md` 验收报告
+- 测试运行截图/输出
+- 验收结论
+
+**禁止事项：**
+- 不写业务代码
+- 不修改实现 Agent 的代码
+- 不替实现 Agent 修复问题
+- 不引入新依赖
+
+**验收标准：**
+- 每个工单必须有独立验收报告
+- 验收报告必须引用工单中的验收标准
+- 验收不通过时必须明确列出缺陷
+- 验收 Agent 不能同时是执行 Agent
+
 ---
 
 ## 三、跨 Agent 协作接口
@@ -212,7 +240,22 @@ Frontend Client  ←→  Backend Core API  ←→  Database/Cache
                     电商平台（拼多多等）
 ```
 
-### 2. 接口契约
+### 2. 工单执行流程
+
+```
+PMO 发放工单
+    ↓
+执行 Agent 开发
+    ↓
+执行 Agent 提交回执单
+    ↓
+acceptance Agent 独立复测
+    ↓
+    ├─ 不通过 → 退回执行 Agent
+    └─ 通过 → PMO 归档并关闭工单
+```
+
+### 3. 接口契约
 
 | 调用方向 | 调用方式 | 说明 |
 |---------|---------|------|
@@ -221,7 +264,8 @@ Frontend Client  ←→  Backend Core API  ←→  Database/Cache
 | Agent Engine → RPA | 通过 Celery Task | `rpa.tasks.execute_action()` |
 | RPA → 电商平台 | Playwright | 浏览器自动化 |
 | RPA → Backend | HTTP API 或 Service 函数 | 上传截图、Cookie、执行结果 |
-| DevOps/QA → 全部 | 测试代码 | 不改动业务代码 |
+| DevOps/QA → 全部 | 测试代码 / CI 脚本 | 不改动业务代码 |
+| acceptance → 全部 | 验收检查 / 测试复跑 | 只读，不写代码 |
 
 ### 3. 共享文件
 
@@ -240,27 +284,28 @@ Frontend Client  ←→  Backend Core API  ←→  Database/Cache
 
 ## 四、工单分配规则
 
-每个工单必须明确指定负责 Agent：
+每个工单必须明确指定负责 Agent 和验收 Agent：
 
 ```markdown
 **负责 Agent:** backend-core
+**验收 Agent:** acceptance
 **依赖 Agent:** devops-qa
 **协作 Agent:** rpa-platform
 ```
 
 工单类型与默认负责 Agent：
 
-| 工单类型 | 默认 Agent | 示例 |
-|---------|-----------|------|
-| 数据库模型 | backend-core | CODE-006 |
-| API 接口 | backend-core | CODE-007 |
-| 认证/租户 | backend-core | CODE-008 |
-| RPA 浏览器 | rpa-platform | CODE-029 ~ CODE-034 |
-| LangGraph | agent-engine | CODE-023, CODE-027 |
-| 业务 Agent | agent-engine | CODE-020 ~ CODE-022 |
-| 桌面端 | frontend-client | 待创建 |
-| PWA | frontend-client | 待创建 |
-| Docker/CI/测试 | devops-qa | CODE-002 及后续 |
+| 工单类型 | 默认负责 Agent | 默认验收 Agent | 示例 |
+|---------|--------------|--------------|------|
+| 数据库模型 | backend-core | acceptance | CODE-006 |
+| API 接口 | backend-core | acceptance | CODE-007 |
+| 认证/租户 | backend-core | acceptance | CODE-008 |
+| RPA 浏览器 | rpa-platform | acceptance | CODE-029 ~ CODE-034 |
+| LangGraph | agent-engine | acceptance | CODE-023, CODE-027 |
+| 业务 Agent | agent-engine | acceptance | CODE-020 ~ CODE-022 |
+| 桌面端 | frontend-client | acceptance | 待创建 |
+| PWA | frontend-client | acceptance | 待创建 |
+| Docker/CI/测试 | devops-qa | acceptance | CODE-002 及后续 |
 
 ---
 
@@ -270,6 +315,7 @@ Frontend Client  ←→  Backend Core API  ←→  Database/Cache
 2. **跨 Agent 接口冲突** → 提交到 PMO，由 PMO 裁决
 3. **依赖版本冲突** → 进 `decision_log.md`，全体 Agent 遵守
 4. **代码合并冲突** → DevOps/QA Agent 负责检测并通知相关 Agent
+5. **验收争议** → acceptance Agent 与执行 Agent 无法达成一致时，由 PMO 裁决
 
 ---
 
@@ -278,3 +324,4 @@ Frontend Client  ←→  Backend Core API  ←→  Database/Cache
 | 时间 | 变更人 | 变更内容 |
 |------|--------|---------|
 | 2026-06-24 | OpenCode | 创建 v1.0，定义 5 个 Agent |
+| 2026-06-24 | OpenCode | v1.1 新增 `acceptance` Agent，明确独立验收机制 |
