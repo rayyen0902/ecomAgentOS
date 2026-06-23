@@ -170,9 +170,15 @@ backend/app/
 - [ ] `/auth/register` 可创建用户和租户
 - [ ] 注册时重复邮箱返回 409
 - [ ] `/auth/login` 正确返回双 token
-- [ ] 密码错误返回 401
+- [ ] 密码错误返回 401，body：
+  ```json
+  {"code": "INVALID_PASSWORD", "message": "邮箱或密码错误"}
+  ```
 - [ ] `/auth/refresh` 能用 refresh_token 换取新 token
-- [ ] refresh_token 过期或被吊销后无法刷新
+- [ ] refresh_token 过期或被吊销后无法刷新，body：
+  ```json
+  {"code": "REFRESH_TOKEN_INVALID", "message": "refresh token 已失效或过期"}
+  ```
 - [ ] `/auth/change-password` 需要旧密码正确
 - [ ] `/auth/logout` 使 refresh_token 失效
 - [ ] access_token 可解析出 tenant_id

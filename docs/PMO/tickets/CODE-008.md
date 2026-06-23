@@ -98,7 +98,10 @@ class AESCipher:
   key = HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=b'ecomagentos-aes').derive(settings.secret_key.encode())
   ```
 - 每次加密生成随机 12 字节 nonce/IV
-- 输出格式（base64 编码）：`nonce:ciphertext:tag` 或封装为 JSON
+- 输出格式（base64 编码 JSON）：
+  ```json
+  {"nonce": "base64", "ciphertext": "base64", "tag": "base64"}
+  ```
 - 相同明文加密两次结果不同（因 nonce 随机）
 
 ---

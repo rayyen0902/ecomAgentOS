@@ -142,7 +142,7 @@ SKU 价格历史。
 - `platform_product_id`（平台侧 ID）
 - `title`（必填）
 - `main_image_url`（可选）
-- `status`
+- `status`：枚举 `active` | `inactive` | `deleted`
 - `created_at`, `updated_at`
 - 唯一约束：`(tenant_id, shop_id, platform_product_id)`
 

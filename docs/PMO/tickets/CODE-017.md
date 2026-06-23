@@ -77,7 +77,7 @@ backend/app/
     {
       "id": "uuid",
       "platform_order_id": "ORDER123456",
-      "amount": 199.00,
+      "amount": "199.00",
       "status": "pending",
       "created_at": "..."
     }
@@ -192,6 +192,9 @@ rejected
 - 订单详情
 - 创建售后单
 - 售后单列表/详情
+- 售后金额超过订单金额返回 400
+- 同一订单多个 pending 售后被阻止
+- 非法订单状态转换返回 400
 - 跨租户访问被拒绝
 
 ---
