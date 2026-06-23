@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#1a73e8" />
+    <meta name="description" content="多Agent电商自主运营系统 - 手机端" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>电商运营中心</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+      .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: #fff; border-top: 1px solid #e0e0e0; padding: 4px 0; z-index: 100; }
+      .tab-item { flex: 1; text-align: center; padding: 4px 0; font-size: 12px; color: #666; cursor: pointer; }
+      .tab-item.active { color: #1a73e8; }
+      .tab-icon { font-size: 20px; display: block; margin-bottom: 2px; }
+      .content { padding: 16px; padding-bottom: 70px; }
+      .card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+      .card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+      .card-body { font-size: 13px; color: #333; }
+      .stat-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .stat-item { background: #fff; border-radius: 12px; padding: 16px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+      .stat-value { font-size: 24px; font-weight: bold; color: #1a73e8; }
+      .stat-label { font-size: 12px; color: #666; margin-top: 4px; }
+      .btn-group { display: flex; gap: 8px; margin-top: 12px; }
+      .btn { flex: 1; padding: 8px 16px; border-radius: 8px; border: none; font-size: 14px; cursor: pointer; }
+      .btn-primary { background: #1a73e8; color: #fff; }
+      .btn-danger { background: #dc3545; color: #fff; }
+      .btn-outline { background: #fff; color: #1a73e8; border: 1px solid #1a73e8; }
+      .nav-header { background: #1a73e8; color: #fff; padding: 16px; font-size: 18px; font-weight: 600; position: sticky; top: 0; z-index: 50; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

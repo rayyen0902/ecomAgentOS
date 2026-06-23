@@ -1,0 +1,33 @@
+{
+  "build": {
+    "withGlobalTauri": true,
+    "devPath": "http://localhost:1420",
+    "distDir": "dist",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
+  },
+  "productName": "电商运营中心",
+  "version": "1.0.0",
+  "identifier": "com.ecom.agent",
+  "buildType": "combined",
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "电商运营中心",
+        "width": 1200,
+        "height": 800,
+        "resizable": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": []
+  }
+}

@@ -1,0 +1,69 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+venv/
+env/
+.venv/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+out/
+
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Docker
+docker-compose.override.yml
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# Screenshots
+screenshots/
+temp/
+output/
+
+# ComfyUI
+ComfyUI/
+
+# Virtual machines
+*.vmem
+*.vmdk
+*.qcow2
+
+# Coverage
+htmlcov/
+.tox/
+.coverage
+.coverage.*
