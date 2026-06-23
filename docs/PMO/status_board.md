@@ -32,7 +32,8 @@
 | CODE-001 | FastAPI 0.138+ 项目骨架 | Phase 0 | backend-core | 已验收 | 无 | 2026-06-24 |
 | CODE-002 | Docker Compose + 服务编排 | Phase 0 | devops-qa | 已验收 | 依赖 CODE-001 | 2026-06-24 |
 | CODE-003 | Python 依赖与工具链 | Phase 0 | devops-qa | 已验收 | 依赖 CODE-001 | 2026-06-24 |
-| CODE-004 | LLM Provider 抽象与日志 | Phase 0 | agent-engine | 开发中 | 依赖 CODE-001, CODE-003 | 2026-06-25 |
+| CODE-004 | LLM Provider 抽象与日志 | Phase 0 | agent-engine | 已验收 | 依赖 CODE-001, CODE-003 | 2026-06-25 |
+| CODE-005 | 全局配置与日志 | Phase 0 | backend-core | 开发中 | 依赖 CODE-001, CODE-003 | 2026-06-25 |
 | CODE-005 | 全局配置与日志 | Phase 0 | backend-core | 开发中 | 依赖 CODE-001, CODE-003 | 2026-06-25 |
 | CODE-006 | 数据库模型与 Alembic | Phase 0 | backend-core | 开发中 | 依赖 CODE-001, CODE-003, CODE-005 | 2026-06-25 |
 
