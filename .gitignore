@@ -75,7 +75,7 @@ logs/
 *.log
 
 # Docker
-.dockerignore
+/.dockerignore
 
 # Archive (keep in git but don't auto-generate)
 # archive/ is intentionally tracked

@@ -1,0 +1,80 @@
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecomagentos-api
+    ports:
+      - "6200:6200"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ecomagentos
+    command: uvicorn app.main:app --host 0.0.0.0 --port 6200 --reload
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: ecomagentos-db
+    ports:
+      - "6210:5432"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ecom}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change-me}
+      POSTGRES_DB: ${POSTGRES_DB:-ecomagentos}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ecom} -d ${POSTGRES_DB:-ecomagentos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - ecomagentos
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecomagentos-redis
+    ports:
+      - "6211:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - ecomagentos
+    restart: unless-stopped
+
+  flower:
+    image: mher/flower:latest
+    container_name: ecomagentos-flower
+    ports:
+      - "6212:5555"
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    depends_on:
+      - redis
+    networks:
+      - ecomagentos
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ecomagentos:
+    driver: bridge
