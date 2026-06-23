@@ -1,0 +1,31 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.8
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        exclude: ^(archive|docs|desktop|mobile)/
+      - id: ruff-format
+        exclude: ^(archive|docs|desktop|mobile)/
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=500']
+      - id: check-merge-conflict
+      - id: check-yaml
+      - id: end-of-file-fixer
+        exclude: ^(archive|docs|desktop|mobile)/
+      - id: trailing-whitespace
+        exclude: ^(archive|docs|desktop|mobile)/
+      - id: detect-private-key
+
+  - repo: local
+    hooks:
+      - id: check-env-files
+        name: Check for .env files
+        entry: 'sh -c "git diff --name-only --cached | grep -E ''\\.env$|\\.env\\.'' && echo ''Error: .env files cannot be committed. Use .env.example instead.'' && exit 1 || exit 0"'
+        language: system
+        always_run: true
+        files: "\\.env$"
