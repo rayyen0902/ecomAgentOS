@@ -21,6 +21,8 @@
 
 实现商品、SKU、价格历史的基础数据接口，为后续改价、价格监控、AI Agent 提供数据层。
 
+**必须遵守 Phase 1 通用规范：** `docs/PMO/phase1_common_spec.md`
+
 ---
 
 ## 交付文件
@@ -97,11 +99,13 @@ backend/app/
 ```json
 {
   "sku_code": "SKU-001",
-  "price": 99.00,
+  "price": "99.00",
   "stock": 100,
-  "spec": "颜色:红;尺码:M"
+  "spec": {"颜色": "红", "尺码": "M"}
 }
 ```
+
+> `price` 使用字符串表示 Decimal（见通用规范），数据库用 `Numeric(12,2)`。
 
 ### GET /api/v1/skus/{sku_id}
 
@@ -117,12 +121,15 @@ SKU 价格历史。
   "items": [
     {
       "id": "uuid",
-      "old_price": 99.00,
-      "new_price": 89.00,
+      "old_price": "99.00",
+      "new_price": "89.00",
       "source": "manual",
       "created_at": "..."
     }
-  ]
+  ],
+  "total": 1,
+  "page": 1,
+  "page_size": 20
 }
 ```
 
@@ -133,11 +140,14 @@ SKU 价格历史。
 ### products
 - `tenant_id`, `shop_id`
 - `platform_product_id`（平台侧 ID）
-- `title`, `main_image_url`, `status`
+- `title`（必填）
+- `main_image_url`（可选）
+- `status`
 - `created_at`, `updated_at`
+- 唯一约束：`(tenant_id, shop_id, platform_product_id)`
 
 ### product_snapshots
-- `product_id`
+- `tenant_id`, `product_id`
 - `snapshot_data`（JSONB，完整商品数据）
 - `created_at`
 
@@ -145,11 +155,15 @@ SKU 价格历史。
 - `tenant_id`, `product_id`
 - `sku_code`, `price`, `stock`, `spec`
 - `created_at`, `updated_at`
+- `price` 类型：`Numeric(12,2)` / Python `Decimal`
+- `spec` 类型：JSONB（必须）
+- 唯一约束：`(tenant_id, product_id, sku_code)`
 
 ### price_history
 - `tenant_id`, `sku_id`
 - `old_price`, `new_price`, `source`
 - `created_at`
+- `old_price` / `new_price` 类型：`Numeric(12,2)` / Python `Decimal`
 
 ---
 
@@ -183,7 +197,8 @@ SKU 价格历史。
 - 所有接口必须要求登录
 - 必须校验 tenant_id
 - 价格变动必须记录历史
-- SKU 规格使用字符串或 JSONB
+- SKU 规格使用 JSONB
+- 所有金额字段使用 `Numeric(12,2)` / `Decimal`，禁止 float
 
 ---
 

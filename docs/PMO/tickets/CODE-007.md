@@ -10,7 +10,7 @@
 | **阶段** | Phase 1 |
 | **负责 Agent** | `backend-core` |
 | **验收 Agent** | `acceptance` |
-| **依赖** | CODE-006 |
+| **依赖** | CODE-005, CODE-006 |
 | **被依赖** | CODE-008, CODE-009, CODE-013, CODE-017 |
 | **原文档章节** | 原设计 20.3 认证模块 |
 | **优先级** | P0 |
@@ -20,6 +20,8 @@
 ## 目标
 
 实现用户认证系统：注册、登录、修改密码、刷新 Token。
+
+**必须遵守 Phase 1 通用规范：** `docs/PMO/phase1_common_spec.md`
 
 ---
 
@@ -70,6 +72,10 @@ backend/app/
 - 如果不提供 `tenant_name`，要求 `tenant_id` 已存在（邀请注册场景，可选）
 - 密码使用 bcrypt 哈希
 - 邮箱唯一
+- 邮箱重复返回 409，body 格式见通用规范：
+  ```json
+  {"code": "EMAIL_ALREADY_EXISTS", "message": "该邮箱已被注册", "details": {"field": "email"}}
+  ```
 
 ### POST /api/v1/auth/login
 
@@ -101,9 +107,15 @@ backend/app/
 }
 ```
 
-- refresh_token 存储在 Redis，支持黑名单/轮换
+- refresh_token 存储在 Redis，支持轮换（rotation）
 - access_token 过期时间：15 分钟
 - refresh_token 过期时间：7 天
+- 调用 `/auth/refresh` 时：
+  1. 校验旧 refresh_token 有效且不在黑名单
+  2. 生成新的 access_token + refresh_token
+  3. 将旧 refresh_token 加入黑名单
+  4. 返回新的双 token
+- 调用 `/auth/logout` 时：将当前 refresh_token 加入 Redis 黑名单，TTL 7 天
 
 ### POST /api/v1/auth/change-password
 
@@ -115,7 +127,12 @@ backend/app/
 }
 ```
 
-**响应：** `{"message": "password changed"}`
+**响应：**
+- 成功：`{"message": "password changed"}`
+- 旧密码错误：返回 400，body：
+  ```json
+  {"code": "INVALID_OLD_PASSWORD", "message": "旧密码不正确", "details": {"field": "old_password"}}
+  ```
 
 - 需要登录（access_token）
 
@@ -176,13 +193,15 @@ backend/app/
 
 至少覆盖：
 - 注册成功
-- 邮箱重复
+- 邮箱重复（验证 409 body 格式）
 - 登录成功
-- 登录密码错误
-- 刷新 token
+- 登录密码错误（验证 401 body 格式）
+- 刷新 token（验证旧 refresh_token 失效）
 - 使用失效 refresh_token 刷新失败
-- 修改密码
-- 注销后刷新失败
+- 修改密码成功
+- 修改密码时旧密码错误（验证 400 body 格式）
+- 注销后 refresh_token 无法使用
+- access_token payload 包含 tenant_id
 
 ---
 
@@ -190,7 +209,11 @@ backend/app/
 
 - 不要硬编码密钥
 - 不要返回密码哈希
-- Redis 操作使用 `redis` async client
+- Redis 操作使用 `redis.asyncio`：
+  ```python
+  import redis.asyncio as redis
+  redis_client = redis.from_url(settings.redis_url, decode_responses=True)
+  ```
 - 所有路由函数必须是 async
 
 ---

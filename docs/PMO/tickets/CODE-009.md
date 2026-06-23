@@ -21,6 +21,8 @@
 
 实现店铺 CRUD、配置管理、状态控制、日报数据查询。
 
+**必须遵守 Phase 1 通用规范：** `docs/PMO/phase1_common_spec.md`
+
 ---
 
 ## 交付文件
@@ -122,6 +124,8 @@ backend/app/
 
 获取店铺日报数据（今日/近7天/近30天）。
 
+> **数据来源说明：** 本工单 `today_orders` / `today_sales` 直接返回 0（mock）。真实数据由后续订单同步工单（CODE-018 / CODE-032）提供，到时替换为从 `orders` 表聚合。
+
 ---
 
 ## 店铺状态机
@@ -137,9 +141,26 @@ pending_bind → active → paused → active
 ## 字段要求
 
 - `platform` 枚举：`pdd`, `taobao`, `douyin`, `jd`
+  - 使用 `Platform(str, Enum)` 定义
+  - 新增平台时同步修改枚举 + `platform_adapters` 表
 - `cookies_encrypted`：AES 加密存储（CODE-008）
-- `config`：JSONB，包含调价策略等
+- `config`：JSONB，当前预定义字段如下（可扩展）：
+  ```json
+  {
+    "min_margin": 0.1,
+    "price_floor": 0.9,
+    "max_daily_price_changes": 10,
+    "auto_approve_price_change": false
+  }
+  ```
 - `status`：pending_bind / active / paused / deleted
+
+## 分页与过滤
+
+- `GET /shops` 支持 `page`、`page_size` 分页
+- `page_size` 上限 100（见通用规范）
+- 列表默认过滤 `deleted_at IS NULL`，不返回已删除店铺
+- 支持按 `platform`、`status` 过滤
 
 ---
 

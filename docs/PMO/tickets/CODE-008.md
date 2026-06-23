@@ -21,6 +21,8 @@
 
 实现多租户数据隔离、tenant_id 自动注入、PostgreSQL RLS、AES 加密敏感数据。
 
+**必须遵守 Phase 1 通用规范：** `docs/PMO/phase1_common_spec.md`
+
 ---
 
 ## 交付文件
@@ -88,9 +90,16 @@ class AESCipher:
     def decrypt(self, ciphertext: str) -> str: ...
 ```
 
-- 使用 `cryptography.fernet` 或 AES-GCM
-- 密钥从 `settings.secret_key` 派生
-- 输出 base64 编码字符串
+- **算法锁定为 AES-256-GCM**（`cryptography` 库）
+- 密钥派生：使用 `HKDF-SHA256` 从 `settings.secret_key` 派生 32 字节加密密钥
+  ```python
+  from cryptography.hazmat.primitives.kdf.hkdf import HKDF
+  from cryptography.hazmat.primitives import hashes
+  key = HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=b'ecomagentos-aes').derive(settings.secret_key.encode())
+  ```
+- 每次加密生成随机 12 字节 nonce/IV
+- 输出格式（base64 编码）：`nonce:ciphertext:tag` 或封装为 JSON
+- 相同明文加密两次结果不同（因 nonce 随机）
 
 ---
 
@@ -129,7 +138,10 @@ class AESCipher:
 - 创建两个租户和两个用户
 - 用户 A 访问自己的数据成功
 - 用户 A 访问用户 B 的数据返回 403/404
+- **同一租户内用户 A 和用户 B 互相可见共享数据**
 - AES 加密解密测试
+- 相同明文加密两次结果不同
+- 解密篡改后的密文失败
 - RLS policy 存在性检查
 
 ---
@@ -138,7 +150,8 @@ class AESCipher:
 
 - 不要泄露其他租户的 tenant_id
 - AES 密钥不可硬编码
-- RLS enforcement 默认关闭，通过配置 `ENABLE_RLS=true` 开启
+- RLS enforcement 默认关闭
+- 在 `Settings` 类中添加 `enable_rls: bool = False` 配置项
 
 ---
 
