@@ -129,6 +129,26 @@ ModuleNotFoundError: No module named 'sqlalchemy'
 
 ---
 
+## 缺陷修复验证
+
+### CODE-006-FIX 修复结果
+
+| 项目 | 结果 | 证据 |
+|------|------|------|
+| Dockerfile 已添加 `requirements.txt` 安装 | 通过 | `RUN pip install -r requirements.txt` 在 `pip install .` 之前 |
+| `docker compose up -d --build` 成功 | 通过 | 4 服务全绿 |
+| `/api/v1/health` 返回 `database: ok` | 通过 | 响应包含 `{"database": "ok"}` |
+| `make check` | 通过 | 无错误 |
+| `make test` | 通过 | 全部通过 |
+
+### 修复后结论
+
+**CODE-006 严重缺陷已修复，Phase 0 全部验收通过。**
+
+> **流程记录：** DevOps-QA Agent 曾主张"该缺陷不存在"，但验收结论以 acceptance Agent 复测结果为准。执行 Agent 无权否决验收结论。
+
+---
+
 ## 签名
 
 acceptance Agent
