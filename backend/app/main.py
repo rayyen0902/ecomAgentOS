@@ -6,9 +6,10 @@ from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.api.v1.health import router as health_router
-from app.core.config import settings
+from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
 
+settings = get_settings()
 configure_logging(level=settings.log_level, fmt=settings.log_format)
 logger = get_logger()
 logger.info(
@@ -43,8 +44,8 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
 
 
 app = FastAPI(
-    title=settings.app_name,
-    version=settings.app_version,
+    title=get_settings().app_name,
+    version=get_settings().app_version,
     docs_url="/docs",
     redoc_url="/redoc",
 )

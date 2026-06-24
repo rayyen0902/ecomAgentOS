@@ -73,7 +73,7 @@
 | 参数传递测试 | 通过 | `test_llm_service_chat_model_override` |
 | stream 测试 | 通过 | `test_llm_service_chat_stream_mock` |
 | 错误处理测试 | 通过 | `test_create_llm_provider_unsupported` |
-| pytest 输出 | 通过 | `10 passed in 2.68s` |
+| pytest 输出 | 通过 | `40 passed in 16.22s`（无 `.env` 干净环境）|
 
 ### 6. 代码质量
 
@@ -98,7 +98,7 @@
 
 - **[x] 通过**
 
-6 项验收标准（Provider 切换 / 日志记录 / 测试 / 文档 / 代码质量 / 安全检查）全部通过。LLM Provider 抽象层设计清晰，工厂模式支持多 provider 切换，Schema 完整，测试覆盖充分。
+6 项验收标准（Provider 切换 / 日志记录 / 测试 / 文档 / 代码质量 / 安全检查）全部通过。LLM Provider 抽象层设计清晰，工厂模式支持多 provider 切换，Schema 完整，测试覆盖充分。F-001 Rev.2 修复后 `tests/conftest.py` 在 pytest 收集阶段注入 `LLM_PROVIDER=mock`，`get_settings.cache_clear()` 确保 LLM 测试不再连接真实 Agnes API。
 
 ---
 

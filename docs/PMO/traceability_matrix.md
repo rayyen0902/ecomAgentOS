@@ -136,7 +136,7 @@
 
 | 原文档章节 | 功能模块 | 功能点 | 实现阶段 | 工单编号 | 当前状态 | 备注 |
 |-----------|---------|--------|---------|---------|---------|------|
-| 6 / 12 | AI | LLM Provider 抽象 | Phase 0 | CODE-004 | 开发中 | Agnes/OpenAI/DeepSeek |
+| 6 / 12 | AI | LLM Provider 抽象 | Phase 0 | CODE-004 | 已验收 | Agnes/OpenAI/DeepSeek |
 | 6 / 12 | AI | 价格决策 Prompt | Phase 3 | CODE-027 | 未开始 | |
 | 6 / 12 | AI | AI 商品文案生成 | Phase 4 | 待创建 | 未开始 | |
 | 6 / 12 | AI | AI 客服回复生成 | Phase 5 | 待创建 | 未开始 | |

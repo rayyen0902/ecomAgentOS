@@ -29,7 +29,7 @@
 
 | 检查项 | 结果 | 证据 |
 |--------|------|------|
-| `import settings` 可导入 | 通过 | `python -c "from app.core.config import settings; print(settings.app_name)"` → `ecomAgentOS` |
+| `import settings` 可导入 | 通过 | `from app.core.config import get_settings; print(get_settings().app_name)` → `ecomAgentOS` |
 | `.env` 值正确加载 | 通过 | `env_file=".env"` 在模型配置中(line 27) |
 | 缺少必填字段报错清晰 | 通过 | `ValidationError: 3 validation errors for Settings: secret_key, database_url, redis_url — Field required` |
 | `secret_key` 必填无默认值 | 通过 | `secret_key: str` (config.py:45，无默认值) |
@@ -86,8 +86,8 @@
 | 检查项 | 结果 | 证据 |
 |--------|------|------|
 | `pytest tests/test_config.py` | 通过 | 10 passed in 0.58s |
-| `make test`（全量） | 通过 | 21 passed in 3.34s（含 health + llm_service）|
-| `make check` | 通过 | `All checks passed! 23 files already formatted` |
+| `make test`（全量） | 通过 | 40 passed in 16.22s（无 `.env` 干净环境）|
+| `make check` | 通过 | `All checks passed! 43 files already formatted` |
 
 ### 7. CODE-004 兼容性
 
@@ -120,7 +120,7 @@
 
 - **[x] 通过**
 
-全部验收标准通过。Settings 类覆盖工单要求的全部 17 个字段，structlog 支持 JSON/Console 双模式输出，请求日志中间件记录完整，必填字段缺失时报错清晰，CODE-004 LLM 配置未被破坏，`.env.example` 两份均已同步。
+全部验收标准通过。Settings 类覆盖工单要求的全部 17 个字段，structlog 支持 JSON/Console 双模式输出，请求日志中间件记录完整，必填字段缺失时报错清晰，CODE-004 LLM 配置未被破坏，`.env.example` 两份均已同步。F-001 Rev.2 已通过 `tests/conftest.py` 的 `pytest_configure` 钩子彻底修复：无 `.env` 干净环境下 40 个测试全部通过，`get_settings.cache_clear()` 确保 monkeypatch 正确生效，LLM mock 测试不再连接真实 API。
 
 ---
 

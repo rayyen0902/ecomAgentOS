@@ -133,6 +133,18 @@ GET http://localhost:6200/api/v1/health
 | R-004 | 本地与 ECS 网络延迟 | 中 | Phase 2 评估部署方案 |
 | R-007 | Docker 镜像因 CUDA wheel 首次构建慢 | 中 | 已接受，后续构建有缓存 |
 
+### 审计结论（GLM 审计）
+
+| 缺陷 | 状态 | 说明 |
+|------|------|------|
+| F-001 | ✅ 已关闭 | `tests/conftest.py` + `get_settings.cache_clear()` 解决干净环境测试隔离 |
+| F-004 | ✅ 已关闭 | 同 F-001，LLM mock 测试不再依赖 `.env` |
+| F-005 | ✅ 已修复 | `conftest.py` 关键变量改为强制覆盖，避免 CI 预设环境变量导致 mock 测试失败 |
+| F-002 | 📋 保留 | health/migration 测试依赖运行中的 PostgreSQL；CI 需配置 db 服务 |
+| F-003 | ✅ 已修复 | `traceability_matrix.md` CODE-004 状态已同步为"已验收" |
+
+**GLM 审计最终结论：** Phase 0 代码骨架真实且高质量，F-001 Rev.2 经独立复跑验证有效，40 passed 确认。**可进入 Phase 1。**
+
 ---
 
 ## 七、评审签字
@@ -142,6 +154,7 @@ GET http://localhost:6200/api/v1/health
 | PMO | OpenCode | 2026-06-24 |
 | 技术负责人 | 用户确认 | 2026-06-24 |
 | 产品负责人 | 用户确认 | 2026-06-24 |
+| 独立审计 | GLM 审计 | 2026-06-24 |
 
 ---
 
@@ -151,3 +164,4 @@ GET http://localhost:6200/api/v1/health
 |------|--------|---------|
 | 2026-06-24 | OpenCode | 创建 Phase 0 评审报告 v1.0 |
 | 2026-06-24 | OpenCode | v1.1 追加 CODE-006-FIX 缺陷修复验证，Phase 0 正式通过 |
+| 2026-06-24 | OpenCode | v1.2 追加 GLM 审计结论，修复 F-005，同步 traceability_matrix |

@@ -8,8 +8,9 @@ from app.services.llm_service import LLMService, log_ai_usage
 
 
 @pytest.mark.parametrize("provider_name", ["agnes", "openai", "deepseek"])
-def test_create_llm_provider_supported(provider_name: str) -> None:
+def test_create_llm_provider_supported(provider_name: str, monkeypatch: pytest.MonkeyPatch) -> None:
     """Factory returns the correct provider configuration for each backend."""
+    monkeypatch.setenv("LLM_PROVIDER", "mock")
     provider = create_llm_provider(provider_name)
     assert provider.config.name == provider_name
     assert provider.default_model == _PROVIDER_CONFIGS[provider_name].default_model

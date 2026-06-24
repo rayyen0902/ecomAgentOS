@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.config import settings
+from app.core.config import get_settings
 from app.db.dependencies import get_db
 from app.schemas.health import HealthCheckResponse
 
@@ -25,7 +25,7 @@ async def health_check(db: AsyncSession = Depends(get_db)) -> HealthCheckRespons
 
     return HealthCheckResponse(
         status="ok" if db_status == "ok" else "degraded",
-        version=settings.app_version,
+        version=get_settings().app_version,
         timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         database=db_status,
     )

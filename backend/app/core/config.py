@@ -6,7 +6,7 @@ environment-specific values must never be hard-coded.
 
 from __future__ import annotations
 
-from functools import cached_property
+from functools import cached_property, lru_cache
 
 from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
@@ -91,4 +91,12 @@ class Settings(BaseSettings):
         return self.app_env == "production"
 
 
-settings = Settings()
+@lru_cache
+def get_settings() -> Settings:
+    """Return a lazily-instantiated, process-wide Settings singleton.
+
+    Using ``lru_cache`` means the ``Settings()`` constructor only runs once
+    per process, but ``monkeypatch.setenv`` in tests can work correctly
+    when it happens *before* the first call to ``get_settings()``.
+    """
+    return Settings()

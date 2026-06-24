@@ -13,7 +13,7 @@ from typing import Any
 
 from openai import AsyncOpenAI
 
-from app.core.config import settings
+from app.core.config import get_settings
 
 
 @dataclass(frozen=True)
@@ -187,7 +187,7 @@ def create_llm_provider(provider: str | None = None) -> BaseLLMProvider:
     Raises:
         ValueError: If the requested provider is not supported.
     """
-    provider = provider or settings.llm_provider
+    provider = provider or get_settings().llm_provider
     if provider == "mock":
         return MockProvider()
 

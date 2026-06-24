@@ -91,16 +91,18 @@ def test_is_production(clean_env: pytest.MonkeyPatch) -> None:
 
 def test_llm_providers_tuple() -> None:
     """llm_providers returns a tuple of supported names."""
-    from app.core.config import settings
+    from app.core.config import get_settings
 
+    settings = get_settings()
     assert isinstance(settings.llm_providers, tuple)
     assert "mock" in settings.llm_providers
 
 
 def test_settings_module_import() -> None:
-    """from app.core.config import settings works."""
-    from app.core.config import settings
+    """from app.core.config import get_settings works."""
+    from app.core.config import get_settings
 
+    settings = get_settings()
     assert settings.app_name == "ecomAgentOS"
 
 
